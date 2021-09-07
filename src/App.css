@@ -22,14 +22,8 @@
 input[type="file"] {
   display: none;
 }
-label {
-  padding: 20px 10px;
-  width: 15%;
-  background-color: #333;
-  color: #FFF;
-  text-transform: uppercase;
-  text-align: center;
-  display: block;
-  margin-top: 10px;
-  cursor: pointer;
+
+.cil-qr-code {
+  font-size: 15vmin;
+  margin-bottom: 20px
 }

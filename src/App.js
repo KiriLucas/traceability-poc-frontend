@@ -5,23 +5,22 @@ import { useState } from 'react'
 
 function App() {
 
-  const [batata2, setBatata2] = useState('')
-  const batata3 = 'QRCode data: '
+  const [plainData, setPlainData] = useState('')
+  const title = 'QRCode data: '
 
   const onChange = ({ target: { files } }) => {
-    createImageBitmap(files[0]).then(bmp => {
+    createImageBitmap(files[0]).then(image => {
       const canvas = document.createElement('canvas')
-      canvas.width = bmp.width
-      canvas.height = bmp.height
-      const ctx = canvas.getContext('2d')
-      ctx.drawImage(bmp, 0, 0)
+      canvas.width = image.width
+      canvas.height = image.height
 
-      const batata = ctx.getImageData(0, 0, bmp.width, bmp.height)
-      const ready = jsQR(batata.data, batata.width, batata.height)
+      const context = canvas.getContext('2d')
+      context.drawImage(image, 0, 0)
 
-      setBatata2(ready.data)
+      const imageData = context.getImageData(0, 0, image.width, image.height)
+      const qrCodeData = jsQR(imageData.data, imageData.width, imageData.height).data
 
-      console.log(ready)
+      setPlainData(qrCodeData)
 
     })
   }
@@ -29,10 +28,9 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <label for="upload">SELECT QRCODE</label>
+        <label class="btn btn-dark" for="upload"><i class="cil-qr-code"></i></label>
         <input type="file" id="upload" onChange={onChange} />
-        <p>{batata3}{batata2}</p>
+        <p>{title}{plainData}</p>
       </header>
     </div>
   );
