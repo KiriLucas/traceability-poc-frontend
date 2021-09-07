@@ -24,6 +24,14 @@ input[type="file"] {
 }
 
 .cil-qr-code {
+  font-size: 10vmin;
+  margin-bottom: 20px;
+  color: rgb(216, 216, 216);
+  transition: 0.2s;
+}
+
+.cil-qr-code:hover {
   font-size: 15vmin;
+  color: rgb(243, 233, 141);
   margin-bottom: 20px
 }
