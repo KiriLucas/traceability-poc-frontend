@@ -2,6 +2,8 @@ import logo from './upload.svg';
 import jsQR from "jsqr";
 import './App.css';
 import { useState } from 'react'
+import { CContainer, CRow, CCol, CNavbar, CNavItem } from '@coreui/react';
+
 
 function App() {
 
@@ -26,13 +28,33 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <label class="btn btn-dark" for="upload"><i class="cil-qr-code"></i></label>
-        <input type="file" id="upload" onChange={onChange} />
-        <p>{title}{plainData}</p>
-      </header>
-    </div>
+
+    <CContainer>
+      <CRow>
+        <CCol xs={8}>
+          <label class="btn btn-dark" for="upload"><i class="cil-qr-code"></i></label>
+          <input type="file" id="upload" onChange={onChange} />
+          <p class="title">{title}{plainData}</p>
+        </CCol>
+      </CRow>
+    </CContainer>
+
+    // <div class="container">
+    //   <div class="c-body">
+    //     <main class="c-main">
+    //     <div class="row">teste
+    //     <div class="col-lg">
+    //       <label class="btn btn-dark" for="upload"><i class="cil-qr-code"></i></label>
+    //       <input type="file" id="upload" onChange={onChange} />
+    //       <p class="title">{title}{plainData}</p>
+    // </div></div>
+    //     </main>
+    //   </div>
+    // </div>
+
+    // <div className="App">
+
+    // </div>
   );
 }
 

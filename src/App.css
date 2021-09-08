@@ -2,13 +2,7 @@
   text-align: center;
 }
 
-.App-logo {
-  height: 10vmin;
-  fill: red;
-  pointer-events: none;
-}
-
-.App-header {
+body {
   background-color: #0c0c0c;
   min-height: 100vh;
   display: flex;
