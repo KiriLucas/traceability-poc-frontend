@@ -11,21 +11,33 @@ body {
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  font-size: 1.3vw;
+}
+
+.container {
+  width: 40vw;
+  max-width: 100%;
 }
 
 input[type="file"] {
   display: none;
 }
 
-.cil-qr-code {
-  font-size: 10vmin;
-  margin-bottom: 20px;
-  color: rgb(216, 216, 216);
-  transition: 0.2s;
+.qcolumn {
+  text-align: center;
 }
 
-.cil-qr-code:hover {
-  font-size: 15vmin;
-  color: rgb(243, 233, 141);
-  margin-bottom: 20px
+.qicon {
+  font-size: 10vmin;
+  display: flex;
+  margin-bottom: 20px;
+  color: rgb(216, 216, 216);
+  transition: 0.4s;
+  display: inline-block;
+}
+
+.qicon:hover {
+  color: rgb(218, 199, 34);
+  font-size: 9vmin;
+  margin-bottom: 20px;
 }
