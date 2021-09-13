@@ -4,10 +4,8 @@ import { CContainer, CRow, CCol, CAlert, CModalHeader, CModal, CModalTitle, CMod
 import jsQR from "jsqr";
 import axios from 'axios';
 import ReactTable from "react-table";
-import { render } from '@testing-library/react';
 
-
-export default class App extends Component {
+ export default class App extends Component {
 
   constructor(props) {
     super(props)
@@ -20,36 +18,69 @@ export default class App extends Component {
       title: 'QRCode data: ',
     }
   }
+  renderListModal = () => {
+    // onClick para abrir modal, esse on click vai setar um state e o state vai ser usado num map pra mapear 
+
+    if (this.state.visibleXL) {
+      return (
+        <CModal size="xl" visible={this.state.visibleXL}>
+          <CModalHeader onDismiss={() => this.setState({ setVisibleXL: false })}>
+            <CModalTitle>Batch list</CModalTitle>
+          </CModalHeader>
+          <CModalBody></CModalBody>
+        </CModal>
+      );
+    }
+  }
+
+  async renderToast() {
+    if (this.state.batchsId) {
+      return (
+        <CAlert color="success" dismissible="true">
+          Batch {this.state.batchsId} created
+        </CAlert>
+      );
+    }
+  }
+
+
+
+
+  onChange = async ({ target: { files } }) => {
+    const image = await createImageBitmap(files[0])
+    const canvas = document.createElement('canvas')
+    const context = canvas.getContext('2d')
+    const url = `http://localhost:3001/batch/new`
+
+    canvas.width = image.width
+    canvas.height = image.height
+    context.drawImage(image, 0, 0)
+
+    const imageData = context.getImageData(0, 0, image.width, image.height)
+    const qrCodeData = jsQR(imageData.data, imageData.width, imageData.height).data
+    const request = await axios.post(url, JSON.parse(qrCodeData), { headers: { 'Content-Type': 'application/json' } })
+
+    this.setState({plainData: qrCodeData})
+    this.setState({batchsId: request.data})
+
+  }
+
+  onListChange = async () => {
+    this.setState({visibleXL: true})
+  }
+
+  async fillData(){
+    const potato = await axios.get(`http://localhost:3001/batch/list`)
+    this.setState({tableData: potato.data})
+    console.log(this.state.tableData)
+  }
+
+  componentDidMount(){
+    this.fillData()
+  }
 
   render() {
 
-    const renderListModal = () => {
-      // 
-  
-      // onClick para abrir modal, esse on click vai setar um state e o state vai ser usado num map pra mapear 
-  
-      if (this.state.visibleXL) {
-        return (
-          <CModal size="xl" visible={this.state.visibleXL}>
-            <CModalHeader onDismiss={() => this.setState({ setVisibleXL: false })}>
-              <CModalTitle>Batch list</CModalTitle>
-            </CModalHeader>
-            <CModalBody></CModalBody>
-  
-          </CModal>
-        );
-      }
-    }
-
-    const renderToast = () => {
-      if (this.state.batchsId) {
-        return (
-          <CAlert color="success" dismissible="true">
-            Batch {this.state.batchsId} created
-          </CAlert>
-        );
-      }
-    }
     const columns = [
       {
         name: 'Title',
@@ -85,69 +116,40 @@ export default class App extends Component {
       },
     ]
 
-
-
-    const onChange = async ({ target: { files } }) => {
-      const image = await createImageBitmap(files[0])
-      const canvas = document.createElement('canvas')
-      const context = canvas.getContext('2d')
-      const url = `http://localhost:3001/batch/new`
-
-      canvas.width = image.width
-      canvas.height = image.height
-      context.drawImage(image, 0, 0)
-
-      const imageData = context.getImageData(0, 0, image.width, image.height)
-      const qrCodeData = jsQR(imageData.data, imageData.width, imageData.height).data
-      const request = await axios.post(url, JSON.parse(qrCodeData), { headers: { 'Content-Type': 'application/json' } })
-
-      this.setState.plainData(qrCodeData)
-      this.setState.batchsId(request.data)
-
-    }
-
-    const onListChange = async () => {
-      this.setState.setVisibleXL(true)
-      const potato = await axios.get(`http://localhost:3001/batch/list`)
-      this.setState.setTableData(potato.data)
-      // console.log(potato.data)
-      console.log(this.state.tableData)
-    }
-
     return (
       <CContainer>
 
-        {renderToast()}
-        {renderListModal()}
-
+        {this.renderToast()}
+        {this.renderListModal()}
+{/* 
         <ReactTable
-          data={this.state.tableData}
+          data={[]}
           columns={columns}
-        />
+        /> */}
 
         <CRow>
           <CCol className="qcolumn">
             <p class="title">New batch</p>
             <label class="cil-qr-code qicon" for="upload"></label>
-            <input type="file" id="upload" onChange={onChange} />
+            <input type="file" id="upload" onChange={this.onChange} />
           </CCol>
 
           <CCol className="qcolumn">
             <p class="title">List batches</p>
-            <label class="cil-list-rich qicon" onClick={onListChange}></label>
+            <label class="cil-list-rich qicon" onClick={this.onListChange}></label>
             {/* <button type="file" id="upload" onChange={onListChange} /> */}
           </CCol>
 
           <CCol className="qcolumn">
             <p class="title">New piece</p>
             <label class="cil-qr-code qicon" for="upload"></label>
-            <input type="file" id="upload" onChange={onChange} />
+            <input type="file" id="upload" onChange={this.onChange} />
           </CCol>
 
           <CCol className="qcolumn">
             <p class="title">Group pieces</p>
             <label class="cil-object-group qicon" for="upload"></label>
-            <input type="file" id="upload" onChange={onChange} />
+            <input type="file" id="upload" onChange={this.onChange} />
           </CCol>
 
           {/* <CCol>
