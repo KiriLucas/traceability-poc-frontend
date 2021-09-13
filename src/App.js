@@ -3,48 +3,125 @@ import React, { Component } from 'react'
 import { CContainer, CRow, CCol, CAlert, CModalHeader, CModal, CModalTitle, CModalBody } from '@coreui/react';
 import jsQR from "jsqr";
 import axios from 'axios';
-import ReactTable from "react-table";
+import MaterialTable from "material-table";
+import { forwardRef } from 'react';
 
- export default class App extends Component {
+import AddBox from '@material-ui/icons/AddBox';
+import ArrowDownward from '@material-ui/icons/ArrowDownward';
+import Check from '@material-ui/icons/Check';
+import ChevronLeft from '@material-ui/icons/ChevronLeft';
+import ChevronRight from '@material-ui/icons/ChevronRight';
+import Clear from '@material-ui/icons/Clear';
+import DeleteOutline from '@material-ui/icons/DeleteOutline';
+import Edit from '@material-ui/icons/Edit';
+import FilterList from '@material-ui/icons/FilterList';
+import FirstPage from '@material-ui/icons/FirstPage';
+import LastPage from '@material-ui/icons/LastPage';
+import Remove from '@material-ui/icons/Remove';
+import SaveAlt from '@material-ui/icons/SaveAlt';
+import Search from '@material-ui/icons/Search';
+import ViewColumn from '@material-ui/icons/ViewColumn';
+
+const tableIcons = {
+  Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
+  Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
+  Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+  Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
+  DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+  Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
+  Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
+  Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+  FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+  LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+  NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+  PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
+  ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+  Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
+  SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
+  ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
+  ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
+};
+
+
+export default class App extends Component {
 
   constructor(props) {
     super(props)
     this.state = {
       plainData: '',
       batchsId: '',
-      potatoTable: [],
       tableData: [],
       visibleXL: false,
       title: 'QRCode data: ',
+      renderToast: false,
+      selectedRow: null,
     }
   }
+
   renderListModal = () => {
-    // onClick para abrir modal, esse on click vai setar um state e o state vai ser usado num map pra mapear 
+    const columns = [
+      {
+        title: 'Amount',
+        field: 'ammount',
+      },
+      {
+        title: 'Batch',
+        field: 'batchId',
+      },
+      {
+        title: 'Creation',
+        field: 'createdAt',
+      },
+      {
+        title: 'Manufactured',
+        field: 'manufacturingDate',
+      },
+      {
+        title: 'Model',
+        field: 'pieceModel',
+      },
+      {
+        title: 'Provider',
+        field: 'provider',
+      },
+    ]
 
     if (this.state.visibleXL) {
       return (
-        <CModal size="xl" visible={this.state.visibleXL}>
-          <CModalHeader onDismiss={() => this.setState({ setVisibleXL: false })}>
+        <CModal size="xl" visible={this.state.visibleXL} backdrop={true} >
+          <CModalHeader onDismiss={() => this.setState({ visibleXL: false })}>
             <CModalTitle>Batch list</CModalTitle>
           </CModalHeader>
-          <CModalBody></CModalBody>
+          <CModalBody>
+            <MaterialTable
+              title="Batch details"
+              data={this.state.tableData}
+              columns={columns}
+              icons={tableIcons}
+              onRowClick={(evt, selectedRow) => {
+                this.setState({selectedRow: selectedRow.tableData.id})
+              }}
+              options={{
+                rowStyle: rowData => ({
+                  backgroundColor:
+                    this.state.selectedRow === rowData.tableData.id ? '#fefff2' : '#FFF'
+                })
+              }} />
+          </CModalBody>
         </CModal>
       );
     }
   }
 
-  async renderToast() {
-    if (this.state.batchsId) {
+  renderToast = () => {
+    if (this.state.renderToast) {
       return (
-        <CAlert color="success" dismissible="true">
+        <CAlert color="info">
           Batch {this.state.batchsId} created
         </CAlert>
       );
     }
   }
-
-
-
 
   onChange = async ({ target: { files } }) => {
     const image = await createImageBitmap(files[0])
@@ -60,72 +137,36 @@ import ReactTable from "react-table";
     const qrCodeData = jsQR(imageData.data, imageData.width, imageData.height).data
     const request = await axios.post(url, JSON.parse(qrCodeData), { headers: { 'Content-Type': 'application/json' } })
 
-    this.setState({plainData: qrCodeData})
-    this.setState({batchsId: request.data})
+    this.setState({ plainData: qrCodeData })
+    this.setState({ batchsId: request.data })
+    this.setState({ renderToast: true }, () => {
+      window.setTimeout(() => {
+        this.setState({ renderToast: false })
+      }, 3000)
+    })
 
   }
 
   onListChange = async () => {
-    this.setState({visibleXL: true})
+    this.setState({ visibleXL: true })
   }
 
-  async fillData(){
+  async fillData() {
     const potato = await axios.get(`http://localhost:3001/batch/list`)
-    this.setState({tableData: potato.data})
+    this.setState({ tableData: potato.data })
     console.log(this.state.tableData)
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.fillData()
   }
 
   render() {
-
-    const columns = [
-      {
-        name: 'Title',
-        selector: 'ammount',
-      },
-      {
-        name: 'Title',
-        selector: 'batchId',
-      },
-      {
-        name: 'Title',
-        selector: 'createdAt',
-      },
-      {
-        name: 'Title',
-        selector: 'id',
-      },
-      {
-        name: 'Title',
-        selector: 'manufacturingDate',
-      },
-      {
-        name: 'Title',
-        selector: 'pieceModel',
-      },
-      {
-        name: 'Title',
-        selector: 'provider',
-      },
-      {
-        name: 'Title',
-        selector: 'updatedAt',
-      },
-    ]
-
     return (
       <CContainer>
 
         {this.renderToast()}
         {this.renderListModal()}
-{/* 
-        <ReactTable
-          data={[]}
-          columns={columns}
-        /> */}
 
         <CRow>
           <CCol className="qcolumn">
@@ -151,24 +192,8 @@ import ReactTable from "react-table";
             <label class="cil-object-group qicon" for="upload"></label>
             <input type="file" id="upload" onChange={this.onChange} />
           </CCol>
-
-          {/* <CCol>
-          <p class="title">New batch</p>
-          <label class="btn btn-dark" for="upload"><i class="cil-basket"></i></label>
-          <input type="file" id="upload" onChange={onChange} />
-          <p class="title">{title}{plainData}</p>
-        </CCol>
-
-        <CCol>
-          <p class="title">New piece</p>
-          <label class="btn btn-dark" for="upload"><i class="cil-qr-code"></i></label>
-          <input type="file" id="upload" onChange={onChange} />
-          <p class="title">{title}{plainData}</p>
-        </CCol> */}
-
         </CRow>
         <CRow>
-
         </CRow>
       </CContainer>
     )

@@ -41,3 +41,10 @@ input[type="file"] {
   font-size: 9vmin;
   margin-bottom: 20px;
 }
+.MuiTableRow-root:nth-child(even){
+  background-color: rgb(255, 255, 255);
+}
+      
+.MuiTableRow-root:nth-child(odd){
+  background-color: rgb(245, 245, 245);
+}
