@@ -48,3 +48,22 @@ input[type="file"] {
 .MuiTableRow-root:nth-child(odd){
   background-color: rgb(245, 245, 245);
 }
+
+.modal-content {
+  color: black
+}
+
+dataTag {
+  font-size: 0.8vw;
+  color: rgb(85, 84, 84);
+}
+
+.modal-body{
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.dataTitle {
+  font-size: 0.8vw;
+  color:rgb(0, 0, 0)
+}
