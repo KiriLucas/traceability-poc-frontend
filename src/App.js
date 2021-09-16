@@ -272,10 +272,10 @@ export default class App extends Component {
       this.setState({ batchId: request.data })
 
       this.fillData();
-      const successMessage = 'Batch ' + request.data + ' created'
+      const successMessage = 'Lote ' + request.data + ' criado'
       toast.success(successMessage);
     } catch (error) {
-      toast.error("Something went wrong!")
+      toast.error("Algo deu errado!")
     }
   }
 
@@ -283,7 +283,7 @@ export default class App extends Component {
     return (
       <CModal size="xl" visible={this.state.groupModal} backdrop={true} >
         <CModalHeader onDismiss={() => this.setState({ groupModal: false })}>
-          <CModalTitle>Group pieces</CModalTitle>
+          <CModalTitle>Grupo de Peças</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CRow fluid>
@@ -349,29 +349,29 @@ export default class App extends Component {
 
         <CRow fluid>
           <CCol className="qcolumn">
-            <p class="title">New batch</p>
+            <p class="title">Novo lote</p>
             <label class="cil-qr-code qicon" for="upload"></label>
             <input type="file" id="upload" onChange={this.newBatchOnChange} />
           </CCol>
 
           <CCol className="qcolumn">
-            <p class="title">List batches</p>
+            <p class="title">Listar lotes</p>
             <label class="cil-list-rich qicon" onClick={this.openBatchOnClick}></label>
           </CCol>
 
           <CCol className="qcolumn">
-            <p class="title">New piece</p>
+            <p class="title">Nova peça</p>
             <label class="cil-qr-code qicon" for="uploadPiece"></label>
             <input type="file" id="uploadPiece" onChange={this.newPieceOnChange} />
           </CCol>
 
           <CCol className="qcolumn">
-            <p class="title">List pieces</p>
+            <p class="title">Listar peças</p>
             <label class="cil-list-rich qicon" onClick={this.openPieceOnClick}></label>
           </CCol>
 
           <CCol className="qcolumn">
-            <p class="title">Group pieces</p>
+            <p class="title">Agrupar peças</p>
             <label class="cil-object-group qicon" for="groupButton" onClick={this.openGroupModal}></label>
           </CCol>
         </CRow>
