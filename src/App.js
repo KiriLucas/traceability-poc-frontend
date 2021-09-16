@@ -372,7 +372,7 @@ export default class App extends Component {
 
           <CCol className="qcolumn">
             <p class="title">Group pieces</p>
-            <label class="cil-object-group qicon" for="group" onClick={this.openGroupModal}></label>
+            <label class="cil-object-group qicon" for="groupButton" onClick={this.openGroupModal}></label>
           </CCol>
         </CRow>
         <CRow>
