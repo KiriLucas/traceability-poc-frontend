@@ -91,27 +91,27 @@ export default class App extends Component {
   renderBatchListModal = () => {
     const columns = [
       {
-        title: 'Amount',
+        title: 'Quantidade',
         field: 'amount',
       },
       {
-        title: 'Batch',
+        title: 'Lote',
         field: 'batchId',
       },
       {
-        title: 'Creation',
+        title: 'Criação',
         field: 'createdAt',
       },
       {
-        title: 'Manufactured',
+        title: 'Fabricação',
         field: 'manufacturingDate',
       },
       {
-        title: 'Model',
+        title: 'Modelo',
         field: 'pieceModel',
       },
       {
-        title: 'Provider',
+        title: 'Fornecedor',
         field: 'provider',
       },
     ]
@@ -121,7 +121,7 @@ export default class App extends Component {
         </CModalHeader>
         <CModalBody>
           <MaterialTable
-            title="Batch list"
+            title="Lista de lotes"
             data={this.state.batchTableData}
             columns={columns}
             icons={tableIcons}
@@ -147,15 +147,15 @@ export default class App extends Component {
   renderPieceListModal = () => {
     const columns = [
       {
-        title: 'Piece ID',
+        title: 'Id da Peça',
         field: 'pieceId',
       },
       {
-        title: 'Batch ID',
+        title: 'Id do Lote',
         field: 'batchId',
       },
       {
-        title: 'Group ID',
+        title: 'Id do Grupo',
         field: 'groupId',
       },
     ]
@@ -165,7 +165,7 @@ export default class App extends Component {
         </CModalHeader>
         <CModalBody>
           <MaterialTable
-            title="Batch list"
+            title="Lista de Peças"
             data={this.state.pieceTableData}
             columns={columns}
             icons={tableIcons}
@@ -192,10 +192,10 @@ export default class App extends Component {
         <CModalBody>
 
           <CListGroup flush>
-            <CListGroupItem><b className="dataTitle">BATCH:</b> <dataTag>{this.state.batchData.batchId}</dataTag></CListGroupItem>
-            <CListGroupItem><b className="dataTitle">MODEL:</b> <dataTag>{this.state.batchData.pieceModel}</dataTag></CListGroupItem>
-            <CListGroupItem><b className="dataTitle">AMOUNT:</b> <dataTag>{this.state.batchData.amount}</dataTag></CListGroupItem>
-            <CListGroupItem><b className="dataTitle">PROVIDER:</b> <dataTag>{this.state.batchData.provider}</dataTag></CListGroupItem>
+            <CListGroupItem><b className="dataTitle">LOTE:</b> <dataTag>{this.state.batchData.batchId}</dataTag></CListGroupItem>
+            <CListGroupItem><b className="dataTitle">MODELO:</b> <dataTag>{this.state.batchData.pieceModel}</dataTag></CListGroupItem>
+            <CListGroupItem><b className="dataTitle">QUANTIDADE:</b> <dataTag>{this.state.batchData.amount}</dataTag></CListGroupItem>
+            <CListGroupItem><b className="dataTitle">FORNECEDOR:</b> <dataTag>{this.state.batchData.provider}</dataTag></CListGroupItem>
           </CListGroup>
 
         </CModalBody>
@@ -211,11 +211,11 @@ export default class App extends Component {
       const request = await axios.post(url, JSON.parse(qrCodeData), { headers: { 'Content-Type': 'application/json' } })
       this.setState({ batchId: request.data })
 
-      const successMessage = 'Piece ' + request.data + ' created'
+      const successMessage = 'Peça ' + request.data + ' criada'
       this.fillData();
       toast.success(successMessage);
     } catch (error) {
-      toast.error("Something went wrong!")
+      toast.error("Algo deu errado!")
     }
   }
 
@@ -226,7 +226,7 @@ export default class App extends Component {
       this.setState({ checkButtonA: 'checkButton', fileButtonA: 'cil-check-alt', disabledA: true, disabledB: false })
       this.setState({ pieceA: piece })
     } catch (error) {
-      toast.error("Something went wrong!")
+      toast.error("Algo deu errado!")
     }
   }
 
@@ -238,7 +238,7 @@ export default class App extends Component {
       this.setState({ pieceB: piece })
       this.groupPieces()
     } catch (error) {
-      toast.error("Something went wrong!")
+      toast.error("Algo deu errado!")
     }
   }
 
@@ -255,10 +255,10 @@ export default class App extends Component {
       setTimeout(() => {
         this.setState({ checkButtonB: '' })
       }, 1500);
-      const successMessage = `${request.data}: New group created!`
+      const successMessage = `${request.data}: Novo grupo criado!`
       toast.success(successMessage)
     } catch (error) {
-      toast.error("Something went wrong!")
+      toast.error("Algo deu errado!")
     }
   }
 
@@ -272,10 +272,10 @@ export default class App extends Component {
       this.setState({ batchId: request.data })
 
       this.fillData();
-      const successMessage = 'Batch ' + request.data + ' created'
+      const successMessage = 'Lote ' + request.data + ' criado'
       toast.success(successMessage);
     } catch (error) {
-      toast.error("Something went wrong!")
+      toast.error("Algo deu errado!")
     }
   }
 
@@ -283,17 +283,17 @@ export default class App extends Component {
     return (
       <CModal size="xl" visible={this.state.groupModal} backdrop={true} >
         <CModalHeader onDismiss={() => this.setState({ groupModal: false })}>
-          <CModalTitle>Group pieces</CModalTitle>
+          <CModalTitle>Agrupar Peças</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CRow fluid>
             <CCol className="qcolumn">
-              <p class="title">Piece A</p>
+              <p class="title">Peça A</p>
               <label class={`${this.state.fileButtonA} groupButton ${this.state.checkButtonA}`} for="group"></label>
               <input type="file" id="group" onChange={this.addFirstPiece} disabled={this.state.disabledA} />
             </CCol>
             <CCol className="qcolumn">
-              <p class="title">Piece B</p>
+              <p class="title">Peça B</p>
               <label class={`${this.state.fileButtonB} groupButton ${this.state.checkButtonB}`} for="groupB"></label>
               <input type="file" id="groupB" onChange={this.addSecondPiece} disabled={this.state.disabledB} />
             </CCol>
@@ -349,29 +349,29 @@ export default class App extends Component {
 
         <CRow fluid>
           <CCol className="qcolumn">
-            <p class="title">New batch</p>
+            <p class="title">Novo lote</p>
             <label class="cil-qr-code qicon" for="upload"></label>
             <input type="file" id="upload" onChange={this.newBatchOnChange} />
           </CCol>
 
           <CCol className="qcolumn">
-            <p class="title">List batches</p>
+            <p class="title">Listar lotes</p>
             <label class="cil-list-rich qicon" onClick={this.openBatchOnClick}></label>
           </CCol>
 
           <CCol className="qcolumn">
-            <p class="title">New piece</p>
+            <p class="title">Nova peça</p>
             <label class="cil-qr-code qicon" for="uploadPiece"></label>
             <input type="file" id="uploadPiece" onChange={this.newPieceOnChange} />
           </CCol>
 
           <CCol className="qcolumn">
-            <p class="title">List pieces</p>
+            <p class="title">Listar peças</p>
             <label class="cil-list-rich qicon" onClick={this.openPieceOnClick}></label>
           </CCol>
 
           <CCol className="qcolumn">
-            <p class="title">Group pieces</p>
+            <p class="title">Agrupar peças</p>
             <label class="cil-object-group qicon" for="groupButton" onClick={this.openGroupModal}></label>
           </CCol>
         </CRow>
