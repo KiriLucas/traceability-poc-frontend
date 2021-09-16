@@ -283,17 +283,17 @@ export default class App extends Component {
     return (
       <CModal size="xl" visible={this.state.groupModal} backdrop={true} >
         <CModalHeader onDismiss={() => this.setState({ groupModal: false })}>
-          <CModalTitle>Grupo de Peças</CModalTitle>
+          <CModalTitle>Agrupar Peças</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CRow fluid>
             <CCol className="qcolumn">
-              <p class="title">Piece A</p>
+              <p class="title">Peça A</p>
               <label class={`${this.state.fileButtonA} groupButton ${this.state.checkButtonA}`} for="group"></label>
               <input type="file" id="group" onChange={this.addFirstPiece} disabled={this.state.disabledA} />
             </CCol>
             <CCol className="qcolumn">
-              <p class="title">Piece B</p>
+              <p class="title">Peça B</p>
               <label class={`${this.state.fileButtonB} groupButton ${this.state.checkButtonB}`} for="groupB"></label>
               <input type="file" id="groupB" onChange={this.addSecondPiece} disabled={this.state.disabledB} />
             </CCol>
