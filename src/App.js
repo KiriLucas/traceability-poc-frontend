@@ -80,7 +80,7 @@ export default class App extends Component {
       batchListVisible: false,
       pieceListVisible: false,
       visibleTwo: false,
-      groupModal: true,
+      groupModal: false,
       title: 'QRCode data: ',
       renderToast: false,
       selectedRow: null,
