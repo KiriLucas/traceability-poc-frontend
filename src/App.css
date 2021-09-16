@@ -67,3 +67,31 @@ dataTag {
   font-size: 0.8vw;
   color:rgb(0, 0, 0)
 }
+
+.row > * {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.groupButton{
+  font-size: 15vmin;
+  display: flex;
+  margin-bottom: 20px;
+  color: rgb(216, 216, 216);
+  transition: 0.4s;
+  display: inline-block;
+}
+
+.checkButton {
+  color: rgb(0, 187, 12);
+  transition: 0.7s;
+}
+
+.cil-plus {
+  transition: 0.8
+} 
+
+.sent {
+  color: rgb(218, 204, 18);
+  transition: 0.8
+}

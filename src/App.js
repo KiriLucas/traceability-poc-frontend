@@ -24,7 +24,8 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const createImage = async (file) => {
+const decodeQrCode = async (file) => {
+
   const image = await createImageBitmap(file)
   const canvas = document.createElement('canvas')
   const context = canvas.getContext('2d')
@@ -64,11 +65,22 @@ export default class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      checkButtonA: '',
+      checkButtonB: '',
+      disabledA: false,
+      disabledB: true,
+      pieceA: '',
+      pieceB: '',
+      fileButtonA: 'cil-plus',
+      fileButtonB: 'cil-plus',
       batchId: '',
       batchTableData: [],
+      pieceTableData: [],
       batchData: [],
-      visibleXL: false,
+      batchListVisible: false,
+      pieceListVisible: false,
       visibleTwo: false,
+      groupModal: true,
       title: 'QRCode data: ',
       renderToast: false,
       selectedRow: null,
@@ -76,7 +88,7 @@ export default class App extends Component {
   }
 
 
-  renderListModal = () => {
+  renderBatchListModal = () => {
     const columns = [
       {
         title: 'Amount',
@@ -104,8 +116,8 @@ export default class App extends Component {
       },
     ]
     return (
-      <CModal size="xl" visible={this.state.visibleXL} backdrop={true} keyboard>
-        <CModalHeader onDismiss={() => this.setState({ visibleXL: false })}>
+      <CModal size="xl" visible={this.state.batchListVisible} backdrop={true} keyboard>
+        <CModalHeader onDismiss={() => this.setState({ batchListVisible: false })}>
         </CModalHeader>
         <CModalBody>
           <MaterialTable
@@ -119,7 +131,46 @@ export default class App extends Component {
               const request = await axios.get(url)
               this.setState({ batchData: request.data })
               this.setState({ visibleTwo: true })
-              this.setState({ visibleXL: false })
+              this.setState({ batchListVisible: false })
+            }}
+            options={{
+              rowStyle: rowData => ({
+                backgroundColor:
+                  this.state.selectedRow === rowData.tableData.id ? '#fefff2' : '#FFF'
+              })
+            }} />
+        </CModalBody>
+      </CModal>
+    );
+  }
+
+  renderPieceListModal = () => {
+    const columns = [
+      {
+        title: 'Piece ID',
+        field: 'pieceId',
+      },
+      {
+        title: 'Batch ID',
+        field: 'batchId',
+      },
+      {
+        title: 'Group ID',
+        field: 'groupId',
+      },
+    ]
+    return (
+      <CModal size="xl" visible={this.state.pieceListVisible} backdrop={true} keyboard>
+        <CModalHeader onDismiss={() => this.setState({ pieceListVisible: false })}>
+        </CModalHeader>
+        <CModalBody>
+          <MaterialTable
+            title="Batch list"
+            data={this.state.pieceTableData}
+            columns={columns}
+            icons={tableIcons}
+            onRowClick={async (evt, selectedRow) => {
+              this.setState({ selectedRow: selectedRow })
             }}
             options={{
               rowStyle: rowData => ({
@@ -135,7 +186,7 @@ export default class App extends Component {
   renderDetailModal = () => {
     return (
       <CModal size="md" visible={this.state.visibleTwo} backdrop={true} >
-        <CModalHeader onDismiss={() => this.setState({ visibleTwo: false, visibleXL: true })}>
+        <CModalHeader onDismiss={() => this.setState({ visibleTwo: false, batchListVisible: true })}>
           <CModalTitle>{this.state.batchData.batchId}</CModalTitle>
         </CModalHeader>
         <CModalBody>
@@ -154,42 +205,121 @@ export default class App extends Component {
 
   newPieceOnChange = async ({ target: { files } }) => {
     try {
-      const qrCodeData = await createImage(files[0])
+      const qrCodeData = await decodeQrCode(files[0])
+
       const url = `http://localhost:3001/piece/new`
       const request = await axios.post(url, JSON.parse(qrCodeData), { headers: { 'Content-Type': 'application/json' } })
-
       this.setState({ batchId: request.data })
 
-      const creationMessage = 'Batch ' + this.state.batchId + ' created'
-      toast.success(creationMessage);
+      const successMessage = 'Piece ' + request.data + ' created'
+      this.fillData();
+      toast.success(successMessage);
     } catch (error) {
-      toast.error("Error!")
+      toast.error("Something went wrong!")
     }
   }
 
+  addFirstPiece = async ({ target: { files } }) => {
+    try {
+      const piece = await decodeQrCode(files[0])
+
+      this.setState({ checkButtonA: 'checkButton', fileButtonA: 'cil-check-alt', disabledA: true, disabledB: false })
+      this.setState({ pieceA: piece })
+    } catch (error) {
+      toast.error("Something went wrong!")
+    }
+  }
+
+  addSecondPiece = async ({ target: { files } }) => {
+    try {
+      const piece = await decodeQrCode(files[0])
+
+      this.setState({ checkButtonB: 'checkButton', fileButtonB: 'cil-check-alt' })
+      this.setState({ pieceB: piece })
+      this.groupPieces()
+    } catch (error) {
+      toast.error("Something went wrong!")
+    }
+  }
+
+  groupPieces = async () => {
+    try {
+      const pieceAId = JSON.parse(this.state.pieceA).pieceId
+      const pieceBId = JSON.parse(this.state.pieceB).pieceId
+      const body = { pieceAId, pieceBId }
+      const url = `http://localhost:3001/piece/group`
+      const request = await axios.post(url, body, { headers: { 'Content-Type': 'application/json' } })
+
+      this.fillData()
+      this.setState({ pieceB: '' })
+      setTimeout(() => {
+        this.setState({ checkButtonB: '' })
+      }, 1500);
+      const successMessage = `${request.data}: New group created!`
+      toast.success(successMessage)
+    } catch (error) {
+      toast.error("Something went wrong!")
+    }
+  }
+
+
   newBatchOnChange = async ({ target: { files } }) => {
     try {
-      const qrCodeData = await createImage(files[0])
+      const qrCodeData = await decodeQrCode(files[0])
       const url = `http://localhost:3001/batch/new`
       const request = await axios.post(url, JSON.parse(qrCodeData), { headers: { 'Content-Type': 'application/json' } })
 
       this.setState({ batchId: request.data })
 
-      const creationMessage = 'Batch ' + this.state.batchId + ' created'
-      toast.success(creationMessage);
+      this.fillData();
+      const successMessage = 'Batch ' + request.data + ' created'
+      toast.success(successMessage);
     } catch (error) {
-      toast.error("Error!")
+      toast.error("Something went wrong!")
     }
   }
 
+  renderGroupModal = () => {
+    return (
+      <CModal size="xl" visible={this.state.groupModal} backdrop={true} >
+        <CModalHeader onDismiss={() => this.setState({ groupModal: false })}>
+          <CModalTitle>Group pieces</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CRow fluid>
+            <CCol className="qcolumn">
+              <p class="title">Piece A</p>
+              <label class={`${this.state.fileButtonA} groupButton ${this.state.checkButtonA}`} for="group"></label>
+              <input type="file" id="group" onChange={this.addFirstPiece} disabled={this.state.disabledA} />
+            </CCol>
+            <CCol className="qcolumn">
+              <p class="title">Piece B</p>
+              <label class={`${this.state.fileButtonB} groupButton ${this.state.checkButtonB}`} for="groupB"></label>
+              <input type="file" id="groupB" onChange={this.addSecondPiece} disabled={this.state.disabledB} />
+            </CCol>
+          </CRow>
+        </CModalBody>
+      </CModal>
+    );
+  }
+
   openBatchOnClick = async () => {
-    this.setState({ visibleXL: true })
+    this.setState({ batchListVisible: true })
+  }
+
+  openPieceOnClick = async () => {
+    this.setState({ pieceListVisible: true })
+  }
+
+  openGroupModal = async () => {
+    this.setState({ groupModal: true })
   }
 
   async fillData() {
-    const request = await axios.get(`http://localhost:3001/batch/list`)
-    this.setState({ batchTableData: request.data })
-    console.log(this.state.batchTableData)
+    const batchListRequest = await axios.get(`http://localhost:3001/batch/list`)
+    const pieceListRequest = await axios.get(`http://localhost:3001/piece/list`)
+    this.setState({ batchTableData: batchListRequest.data })
+    this.setState({ pieceTableData: pieceListRequest.data })
   }
 
   componentDidMount() {
@@ -197,7 +327,6 @@ export default class App extends Component {
   }
 
   render() {
-
     return (
       <CContainer>
 
@@ -213,10 +342,12 @@ export default class App extends Component {
           pauseOnHover
         />
 
-        {this.renderListModal()}
+        {this.renderBatchListModal()}
+        {this.renderPieceListModal()}
         {this.renderDetailModal()}
+        {this.renderGroupModal()}
 
-        <CRow>
+        <CRow fluid>
           <CCol className="qcolumn">
             <p class="title">New batch</p>
             <label class="cil-qr-code qicon" for="upload"></label>
@@ -230,14 +361,18 @@ export default class App extends Component {
 
           <CCol className="qcolumn">
             <p class="title">New piece</p>
-            <label class="cil-qr-code qicon" for="upload"></label>
-            <input type="file" id="upload" onChange={this.newPieceOnChange} />
+            <label class="cil-qr-code qicon" for="uploadPiece"></label>
+            <input type="file" id="uploadPiece" onChange={this.newPieceOnChange} />
+          </CCol>
+
+          <CCol className="qcolumn">
+            <p class="title">List pieces</p>
+            <label class="cil-list-rich qicon" onClick={this.openPieceOnClick}></label>
           </CCol>
 
           <CCol className="qcolumn">
             <p class="title">Group pieces</p>
-            <label class="cil-object-group qicon" for="upload"></label>
-            <input type="file" id="upload" onChange={this.onChange} />
+            <label class="cil-object-group qicon" for="group" onClick={this.openGroupModal}></label>
           </CCol>
         </CRow>
         <CRow>
