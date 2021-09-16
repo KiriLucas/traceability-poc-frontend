@@ -1,5 +1,5 @@
 import './App.css';
-import React, { Component, useState } from 'react'
+import React, { Component } from 'react'
 import { CContainer, CRow, CCol, CModalHeader, CModal, CModalTitle, CModalBody, CListGroup, CListGroupItem } from '@coreui/react';
 import jsQR from "jsqr";
 import axios from 'axios';
